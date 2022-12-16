@@ -802,9 +802,11 @@ def get_endpoint_url_for_workload(p_client, workload, timeout=600):
         workload_list = p_client.list_workload(uuid=workload.uuid).data
         assert len(workload_list) == 1
         workload = workload_list[0]
+        print("-------workload-------", workload)
         if hasattr(workload, 'publicEndpoints'):
             assert len(workload.publicEndpoints) > 0
             url = "http://"
+            print("---------url-----------", url)
             url = url + workload.publicEndpoints[0]["addresses"][0] + ":"
             url = url + str(workload.publicEndpoints[0]["port"])
             fqdn_available = True
