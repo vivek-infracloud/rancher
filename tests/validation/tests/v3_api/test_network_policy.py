@@ -80,7 +80,3 @@ def create_project_client(request):
     namespace["cluster"] = cluster
     namespace["project"] = p
 
-    def fin():
-        client = get_user_client()
-        client.delete(namespace["project"])
-    request.addfinalizer(fin)
