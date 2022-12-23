@@ -883,12 +883,15 @@ def retry_cmd_validate_expected(pod, cmd, expected, timeout=300):
     timeout = start + timeout
     cmd_output = kubectl_pod_exec(pod, cmd)
     decode_cmd = cmd_output.decode('utf-8')
+    i = 1
     while time.time() < timeout:
+        print("attempt i", i)
         if any(x in str(cmd_output) for x in expected):
             return decode_cmd
         time.sleep(5)
         cmd_output = kubectl_pod_exec(pod, cmd)
         decode_cmd = cmd_output.decode('utf-8')
+        i = i+1
     raise AssertionError(
         "Timed out waiting to get expected output")
 
