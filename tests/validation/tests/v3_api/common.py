@@ -882,6 +882,9 @@ def retry_cmd_validate_expected(pod, cmd, expected, timeout=300):
     start = time.time()
     timeout = start + timeout
     cmd_output = kubectl_pod_exec(pod, cmd)
+    print("----cmd_output----", cmd_output)
+    print("----str(cmd_output)----", str(cmd_output))
+    print("----expected----", expected)
     decode_cmd = cmd_output.decode('utf-8')
     i = 1
     while time.time() < timeout:
