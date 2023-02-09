@@ -500,7 +500,6 @@ def validate_workload_with_sidekicks(p_client, workload, type, ns_name,
     assert len(pods) == pod_count
     for pod in pods:
         wait_for_pod_to_running(p_client, pod)
-
     all_containers_running = False
     start_time = time.time()
     while not all_containers_running and time.time() - start_time < 10:
@@ -513,7 +512,6 @@ def validate_workload_with_sidekicks(p_client, workload, type, ns_name,
         execute_kubectl_cmd(get_pods)
         pods_result = execute_kubectl_cmd(get_pods)
         assert len(pods_result["items"]) == pod_count
-
         all_containers_running = True
         for pod in pods_result["items"]:
             if pod["status"]["phase"] not in ["Running"]:
@@ -523,10 +521,8 @@ def validate_workload_with_sidekicks(p_client, workload, type, ns_name,
                     "running" not in [c["state"] for c in pod["status"]["containerStatuses"]]:
                 all_containers_running = False
                 break
-
         time.sleep(1)
-
-    assert all_containers_running, "One or more containers are not in the Running or Succeeded status"
+    assert all_containers_running
 
 
 def validate_workload_paused(p_client, workload, expectedstatus):
