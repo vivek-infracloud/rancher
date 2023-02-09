@@ -489,6 +489,9 @@ def validate_workload(p_client, workload, type, ns_name, pod_count=1,
 
 import time
 
+import time
+
+
 def validate_workload_with_sidekicks(p_client, workload, type, ns_name,
                                      pod_count=1):
     workload = wait_for_wl_to_active(p_client, workload)
@@ -497,30 +500,33 @@ def validate_workload_with_sidekicks(p_client, workload, type, ns_name,
     assert len(pods) == pod_count
     for pod in pods:
         wait_for_pod_to_running(p_client, pod)
-    wl_result = execute_kubectl_cmd(
-        "get " + type + " " + workload.name + " -n " + ns_name)
-    assert wl_result["status"]["readyReplicas"] == pod_count
-    for key, value in workload.workloadLabels.items():
-        label = key + "=" + value
-    get_pods = "get pods -l" + label + " -n " + ns_name
-    execute_kubectl_cmd(get_pods)
-    pods_result = execute_kubectl_cmd(get_pods)
-    assert len(pods_result["items"]) == pod_count
+
+    all_containers_running = False
     start_time = time.time()
-    while (time.time() - start_time) < 10:
+    while not all_containers_running and time.time() - start_time < 10:
+        wl_result = execute_kubectl_cmd(
+            "get " + type + " " + workload.name + " -n " + ns_name)
+        assert wl_result["status"]["readyReplicas"] == pod_count
+        for key, value in workload.workloadLabels.items():
+            label = key + "=" + value
+        get_pods = "get pods -l" + label + " -n " + ns_name
+        execute_kubectl_cmd(get_pods)
+        pods_result = execute_kubectl_cmd(get_pods)
+        assert len(pods_result["items"]) == pod_count
+
         all_containers_running = True
         for pod in pods_result["items"]:
-            if pod["status"]["phase"] != "Running":
+            if pod["status"]["phase"] not in ["Running"]:
                 all_containers_running = False
                 break
-            if "running" not in pod["status"]["containerStatuses"][0]["state"] or "running" not in pod["status"]["containerStatuses"][1]["state"]:
+            if len(pod["status"]["containerStatuses"]) != 2 or \
+                    "running" not in [c["state"] for c in pod["status"]["containerStatuses"]]:
                 all_containers_running = False
                 break
-        if all_containers_running:
-            break
-        time.sleep(1)
-    assert all_containers_running
 
+        time.sleep(1)
+
+    assert all_containers_running, "One or more containers are not in the Running or Succeeded status"
 
 
 def validate_workload_paused(p_client, workload, expectedstatus):
