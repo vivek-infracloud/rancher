@@ -25,10 +25,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-const (
-	namespace = "fleet-default"
-)
-
 type RKE2NodeDriverProvisioningTestSuite struct {
 	suite.Suite
 	client             *rancher.Client

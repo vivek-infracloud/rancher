@@ -15,12 +15,14 @@ import (
 )
 
 const (
-	awsProviderName       = "aws"
-	azureProviderName     = "azure"
-	doProviderName        = "do"
-	harvesterProviderName = "harvester"
-	linodeProviderName    = "linode"
-	etcdnodeCount         = 3
+	awsProviderName              = "aws"
+	azureProviderName            = "azure"
+	doProviderName               = "do"
+	harvesterProviderName        = "harvester"
+	linodeProviderName           = "linode"
+	etcdnodeCount                = 3
+	namespace                    = "fleet-default"
+	ProvisioningSteveResouceType = "provisioning.cattle.io.cluster"
 )
 
 type CloudCredFunc func(rancherClient *rancher.Client) (*cloudcredentials.CloudCredential, error)
