@@ -20,13 +20,12 @@ import (
 )
 
 const (
-	defaultNamespace             = "default"
-	localClusterName             = "local"
-	wloadBeforeRestore           = "wload-before-restore"
-	ingressName                  = "ingress"
-	wloadServiceName             = "wload-service"
-	ProvisioningSteveResouceType = "provisioning.cattle.io.cluster"
-	wloadAfterBackup             = "wload-after-backup"
+	defaultNamespace   = "default"
+	localClusterName   = "local"
+	wloadBeforeRestore = "wload-before-restore"
+	ingressName        = "ingress"
+	wloadServiceName   = "wload-service"
+	wloadAfterBackup   = "wload-after-backup"
 )
 
 func createSnapshot(client *rancher.Client, clustername string, generation int, namespace string) error {

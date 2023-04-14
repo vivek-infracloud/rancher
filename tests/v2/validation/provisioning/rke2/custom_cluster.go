@@ -22,10 +22,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-const (
-	namespace = "fleet-default"
-)
-
 func TestProvisioningRKE2CustomCluster(t *testing.T, client *rancher.Client, externalNodeProvider provisioning.ExternalNodeProvider, nodesAndRoles []string, kubeVersion, cni string, harden *provisioning.Config, nodeCountWin int, hasWindows bool) {
 	numNodesLin := len(nodesAndRoles)
 
