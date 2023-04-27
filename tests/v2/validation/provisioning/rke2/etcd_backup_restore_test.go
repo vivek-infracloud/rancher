@@ -108,7 +108,8 @@ func (r *RKE2EtcdSnapshotRestoreTestSuite) EtcdSnapshotRestoreWithK8sUpgrade(pro
 	logrus.Info("got local cluster id.............", localClusterID)
 
 	logrus.Infof("creating watch over pods.............")
-	r.watchAndWaitForPods(client, clusterID)
+	err = watchAndWaitForPods(client, clusterID)
+	require.NoError(r.T(), err)
 	logrus.Infof("All pods are up and running.............")
 
 	// creating the workload W1
@@ -215,7 +216,8 @@ func (r *RKE2EtcdSnapshotRestoreTestSuite) EtcdSnapshotRestoreWithK8sUpgrade(pro
 	logrus.Infof("cluster is active again.............")
 
 	logrus.Infof("creating watch over pods.............")
-	r.watchAndWaitForPods(client, clusterID)
+	err = watchAndWaitForPods(client, clusterID)
+	require.NoError(r.T(), err)
 	logrus.Infof("All pods are up and running.............")
 
 	logrus.Infof("fetching deployment list to validate restore.............")
@@ -273,7 +275,8 @@ func (r *RKE2EtcdSnapshotRestoreTestSuite) EtcdSnapshotRestoreWithUpgradeStrateg
 	logrus.Info("got local cluster id.............", localClusterID)
 
 	logrus.Infof("creating watch over pods.............")
-	r.watchAndWaitForPods(client, clusterID)
+	err = watchAndWaitForPods(client, clusterID)
+	require.NoError(r.T(), err)
 	logrus.Infof("All pods are up and running.............")
 
 	logrus.Infof("creating a workload(nginx deployment).............")
@@ -367,7 +370,8 @@ func (r *RKE2EtcdSnapshotRestoreTestSuite) EtcdSnapshotRestoreWithUpgradeStrateg
 	logrus.Infof("cluster is active again.............")
 
 	logrus.Infof("creating watch over pods.............")
-	r.watchAndWaitForPods(client, clusterID)
+	err = watchAndWaitForPods(client, clusterID)
+	require.NoError(r.T(), err)
 	logrus.Infof("All pods are up and running.............")
 
 	logrus.Infof("fetching deployment list to validate restore.............")
