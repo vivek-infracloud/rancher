@@ -34,7 +34,7 @@ func TestProvisioningK3SCustomCluster(t *testing.T, client *rancher.Client, exte
 
 	clusterName := namegen.AppendRandomString(externalNodeProvider.Name)
 
-	cluster := clusters.NewK3SRKE2ClusterConfig(clusterName, namespace, "", "", kubeVersion, psact, nil)
+	cluster := clusters.NewK3SRKE2ClusterConfig(clusterName, namespace, "", "", kubeVersion, psact, nil, nil)
 
 	clusterResp, err := clusters.CreateK3SRKE2Cluster(client, cluster)
 	require.NoError(t, err)

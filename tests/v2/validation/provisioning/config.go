@@ -3,6 +3,7 @@ package provisioning
 import (
 	"github.com/rancher/rancher/tests/framework/extensions/machinepools"
 	nodepools "github.com/rancher/rancher/tests/framework/extensions/rke1/nodepools"
+	"github.com/rancher/rke/types"
 )
 
 type Version string
@@ -59,4 +60,5 @@ type Config struct {
 	NodeProviders          []string                 `json:"nodeProviders" yaml:"nodeProviders"`
 	PSACT                  string                   `json:"psact" yaml:"psact"`
 	Hardened               bool                     `json:"hardened" yaml:"hardened"`
+	S3BackupConfig         *types.S3BackupConfig    `json:"s3BackupConfig" yaml:"s3BackupConfig"`
 }

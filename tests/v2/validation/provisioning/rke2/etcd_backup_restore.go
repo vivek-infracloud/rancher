@@ -87,7 +87,7 @@ func getSnapshots(client *rancher.Client,
 
 }
 
-func createRKE2NodeDriverCluster(client *rancher.Client, provider *Provider, clusterName string, k8sVersion string, namespace string, cni string) (*steveV1.SteveAPIObject, error) {
+func createRKE2NodeDriverCluster(client *rancher.Client, provider *Provider, clusterName string, k8sVersion string, namespace string, cni string, s3Snapshot *rkev1.ETCDSnapshotS3) (*steveV1.SteveAPIObject, error) {
 
 	nodeRoles := []machinepools.NodeRoles{
 		{
@@ -114,6 +114,7 @@ func createRKE2NodeDriverCluster(client *rancher.Client, provider *Provider, clu
 	if err != nil {
 		return nil, err
 	}
+
 	generatedPoolName := fmt.Sprintf("nc-%s-pool1-", clusterName)
 	machinePoolConfig := provider.MachinePoolFunc(generatedPoolName, namespace)
 
@@ -124,8 +125,8 @@ func createRKE2NodeDriverCluster(client *rancher.Client, provider *Provider, clu
 
 	machinePools := machinepools.RKEMachinePoolSetup(nodeRoles, machineConfigResp)
 
-	cluster := clusters.NewK3SRKE2ClusterConfig(clusterName, namespace, cni, cloudCredential.ID, k8sVersion, "", machinePools)
-
+	cluster := clusters.NewK3SRKE2ClusterConfig(clusterName, namespace, cni, cloudCredential.ID, k8sVersion, "", machinePools, s3Snapshot)
+	cluster.Spec.RKEConfig.ETCD.S3 = s3Snapshot
 	return clusters.CreateK3SRKE2Cluster(client, cluster)
 
 }

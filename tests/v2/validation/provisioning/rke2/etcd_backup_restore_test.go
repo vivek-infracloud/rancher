@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	rkev1 "github.com/rancher/rancher/pkg/apis/rke.cattle.io/v1"
 	"github.com/rancher/rancher/tests/framework/clients/rancher"
 	steveV1 "github.com/rancher/rancher/tests/framework/clients/rancher/v1"
 	"github.com/rancher/rancher/tests/framework/extensions/clusters"
@@ -39,6 +40,7 @@ type RKE2EtcdSnapshotRestoreTestSuite struct {
 	cnis               []string
 	providers          []string
 	nodesAndRoles      []machinepools.NodeRoles
+	etcdSnapshotS3     *rkev1.ETCDSnapshotS3
 }
 
 func (r *RKE2EtcdSnapshotRestoreTestSuite) TearDownSuite() {
@@ -62,6 +64,21 @@ func (r *RKE2EtcdSnapshotRestoreTestSuite) SetupSuite() {
 	client, err := rancher.NewClient("", testSession)
 	require.NoError(r.T(), err)
 
+	if clustersConfig.S3BackupConfig != nil {
+		r.etcdSnapshotS3 = &rkev1.ETCDSnapshotS3{
+			Endpoint:      clustersConfig.S3BackupConfig.Endpoint,
+			Bucket:        clustersConfig.S3BackupConfig.BucketName,
+			Region:        clustersConfig.S3BackupConfig.Region,
+			Folder:        clustersConfig.S3BackupConfig.Folder,
+			SkipSSLVerify: true,
+		}
+		provider := CreateProvider(provisioning.AWSProviderName.String())
+		creds, err := provider.CloudCredFunc(client)
+		require.NoError(r.T(), err)
+		r.etcdSnapshotS3.CloudCredentialName = creds.ID
+		logrus.Infof("%v", creds.ID)
+	}
+
 	r.client = client
 
 }
@@ -83,7 +100,7 @@ func (r *RKE2EtcdSnapshotRestoreTestSuite) EtcdSnapshotRestoreWithK8sUpgrade(pro
 	clusterName := namegen.AppendRandomString(provider.Name.String())
 
 	logrus.Infof("creating rke2Cluster.............")
-	clusterResp, err := createRKE2NodeDriverCluster(client, provider, clusterName, initialK8sVersion, r.ns, r.cnis[0])
+	clusterResp, err := createRKE2NodeDriverCluster(client, provider, clusterName, initialK8sVersion, r.ns, r.cnis[0], r.etcdSnapshotS3)
 	require.NoError(r.T(), err)
 	require.Equal(r.T(), clusterName, clusterResp.ObjectMeta.Name)
 	logrus.Infof("rke2Cluster create request successful.............")
@@ -253,7 +270,7 @@ func (r *RKE2EtcdSnapshotRestoreTestSuite) EtcdSnapshotRestoreWithUpgradeStrateg
 	clusterName := namegen.AppendRandomString(provider.Name.String())
 
 	logrus.Infof("creating rke2Cluster.............")
-	clusterResp, err := createRKE2NodeDriverCluster(client, provider, clusterName, initialK8sVersion, r.ns, r.cnis[0])
+	clusterResp, err := createRKE2NodeDriverCluster(client, provider, clusterName, initialK8sVersion, r.ns, r.cnis[0], r.etcdSnapshotS3)
 	require.NoError(r.T(), err)
 	require.Equal(r.T(), clusterName, clusterResp.ObjectMeta.Name)
 	logrus.Infof("rke2Cluster create request successful.............")
@@ -447,7 +464,7 @@ func (r *RKE2EtcdSnapshotRestoreTestSuite) EtcdSnapshotRestore(provider *Provide
 	clusterName := namegen.AppendRandomString(provider.Name.String())
 
 	logrus.Infof("creating rke2Cluster.............")
-	clusterResp, err := createRKE2NodeDriverCluster(client, provider, clusterName, initialK8sVersion, r.ns, r.cnis[0])
+	clusterResp, err := createRKE2NodeDriverCluster(client, provider, clusterName, initialK8sVersion, r.ns, r.cnis[0], r.etcdSnapshotS3)
 	require.NoError(r.T(), err)
 	require.Equal(r.T(), clusterName, clusterResp.ObjectMeta.Name)
 	logrus.Infof("rke2Cluster create request successful.............")

@@ -159,7 +159,7 @@ func NewRKE1ClusterConfig(clusterName, cni, kubernetesVersion string, psact stri
 }
 
 // NewK3SRKE2ClusterConfig is a constructor for a apisV1.Cluster object, to be used by the rancher.Client.Provisioning client.
-func NewK3SRKE2ClusterConfig(clusterName, namespace, cni, cloudCredentialSecretName, kubernetesVersion string, psact string, machinePools []apisV1.RKEMachinePool) *apisV1.Cluster {
+func NewK3SRKE2ClusterConfig(clusterName, namespace, cni, cloudCredentialSecretName, kubernetesVersion string, psact string, machinePools []apisV1.RKEMachinePool, s3Snapshot *rkev1.ETCDSnapshotS3) *apisV1.Cluster {
 	typeMeta := metav1.TypeMeta{
 		Kind:       "Cluster",
 		APIVersion: "provisioning.cattle.io/v1",
@@ -172,6 +172,7 @@ func NewK3SRKE2ClusterConfig(clusterName, namespace, cni, cloudCredentialSecretN
 	}
 
 	etcd := &rkev1.ETCD{
+		S3:                   s3Snapshot,
 		SnapshotRetention:    5,
 		SnapshotScheduleCron: "0 */5 * * *",
 	}
@@ -237,7 +238,7 @@ func NewK3SRKE2ClusterConfig(clusterName, namespace, cni, cloudCredentialSecretN
 
 // HardenK3SRKE2ClusterConfig is a constructor for a apisV1.Cluster object, to be used by the rancher.Client.Provisioning client.
 func HardenK3SRKE2ClusterConfig(clusterName, namespace, cni, cloudCredentialSecretName, kubernetesVersion string, psact string, machinePools []apisV1.RKEMachinePool) *apisV1.Cluster {
-	v1Cluster := NewK3SRKE2ClusterConfig(clusterName, namespace, cni, cloudCredentialSecretName, kubernetesVersion, psact, machinePools)
+	v1Cluster := NewK3SRKE2ClusterConfig(clusterName, namespace, cni, cloudCredentialSecretName, kubernetesVersion, psact, machinePools, nil)
 
 	if strings.Contains(kubernetesVersion, "k3s") {
 		v1Cluster.Spec.RKEConfig.MachineGlobalConfig.Data["kube-apiserver-arg"] = []string{

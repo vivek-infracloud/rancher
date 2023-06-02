@@ -35,7 +35,7 @@ func TestProvisioningRKE2Cluster(t *testing.T, client *rancher.Client, provider 
 
 	machinePools := machinepools.RKEMachinePoolSetup(nodesAndRoles, machineConfigResp)
 
-	cluster := clusters.NewK3SRKE2ClusterConfig(clusterName, namespace, cni, cloudCredential.ID, kubeVersion, psact, machinePools)
+	cluster := clusters.NewK3SRKE2ClusterConfig(clusterName, namespace, cni, cloudCredential.ID, kubeVersion, psact, machinePools, nil)
 	clusterResp, err := clusters.CreateK3SRKE2Cluster(client, cluster)
 	require.NoError(t, err)
 

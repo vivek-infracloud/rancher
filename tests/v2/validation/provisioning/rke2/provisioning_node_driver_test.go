@@ -150,7 +150,7 @@ func (r *RKE2NodeDriverProvisioningTestSuite) TestProvisioningRKE2Cluster() {
 				for _, cni := range r.cnis {
 					name += " cni: " + cni
 					r.Run(name, func() {
-						TestProvisioningRKE2Cluster(r.T(), client, provider, tt.nodeRoles, kubeVersion, cni, tt.psact)
+						TestProvisioningRKE2Cluster(r.T(), client, provider, tt.nodeRoles, kubeVersion, cni, tt.psact, r.etcdSnapshotS3)
 					})
 				}
 			}
@@ -192,7 +192,7 @@ func (r *RKE2NodeDriverProvisioningTestSuite) TestProvisioningRKE2ClusterDynamic
 				for _, cni := range r.cnis {
 					name += " cni: " + cni
 					r.Run(name, func() {
-						TestProvisioningRKE2Cluster(r.T(), client, provider, nodesAndRoles, kubeVersion, cni, tt.psact)
+						TestProvisioningRKE2Cluster(r.T(), client, provider, nodesAndRoles, kubeVersion, cni, tt.psact, r.etcdSnapshotS3)
 					})
 				}
 			}
